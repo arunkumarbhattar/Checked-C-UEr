@@ -19,7 +19,7 @@ chmod -R 777 $current_dir
 cd "$current_dir/simics/intel-simics-package-manager-1.5.3"
 ./ispm packages --install-bundle $current_dir/simics/simics-6-packages-2022-49-linux64.ispm --install-dir $current_dir/simics/ --create-project $current_dir/simics/fuzzer-project -y
 cd $current_dir
-
+chmod -R 777 $current_dir
 # copy it to the necessary directory
 cp src/Build/SimicsOpenBoardPkg/BoardX58Ich10/DEBUG_GCC5/FV/BOARDX58ICH10.fd simics/simics-qsp-x86-6.0.65/targets/qsp-x86/images/
 
@@ -38,3 +38,4 @@ export AFL_CUSTOM_MUTATOR_LIBRARY="$PWD/custom_mutator.so"
 mkdir fuzz_output
 
 cd $current_dir
+chmod -R 777 $current_dir

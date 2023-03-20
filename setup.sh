@@ -53,7 +53,7 @@ cd $main_dir
 chmod -R 777 simics
 
 cd "simics/intel-simics-package-manager-1.5.3"
-./ispm packages --install-bundle ../simics-6-packages-2022-49-linux64.ispm --install-dir ../simics/ -y
+./ispm packages --install-bundle ../simics-6-packages-2022-49-linux64.ispm --install-dir $main_dir/simics/ -y
 
 cd $main_dir
 chmod -R 777 simics
