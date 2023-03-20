@@ -1,0 +1,10 @@
+--- qsp-uefi.include	2022-12-08 17:50:32.000000000 -0500
++++ modified.include	2023-03-19 12:45:36.790462733 -0400
+@@ -1,6 +1,6 @@
+ decl {
+  params from "qsp-images.include"
+   default bios_image =
+-   "%simics%/targets/qsp-x86/images/SIMICSX58IA32X64_1_1_0_r.fd"
++   "%simics%/targets/qsp-x86/images/BOARDX58ICH10.fd"
+   default enable_efi = TRUE
+ }
