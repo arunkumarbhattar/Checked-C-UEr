@@ -5,4 +5,4 @@ main_dir=$PWD
 
 # run the fuzzer
 cd $main_dir/simics/fuzzer-project
-afl-fuzz -i testcases/ -o testrun/ -n -t 100000 -- ./afl-wrapper @@
+$main_dir/AFLplusplus/afl-fuzz -i testcases/ -o testrun/ -n -t 100000 -- ./afl-wrapper @@
