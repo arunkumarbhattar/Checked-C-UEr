@@ -9,7 +9,7 @@ import time
 #cli.quiet_run_command(input) # Run a CLI command, same as directly inputting into the terminal
 def fuzz(input):
     # Create  Input
-    fuzz_input = "BBClient.efi 0" + input + "\n"
+    fuzz_input = "BBClient.efi " + input + "\n"
 
     # Start simics
     # Set up serial output
@@ -23,7 +23,7 @@ def fuzz(input):
         
     cli.quiet_run_command('$cc = (collect-coverage context-query="\'UEFI Firmware\'")')
     try:
-        cli.quiet_run_command('$cc.add-report \"coverage.txt\"')
+        cli.quiet_run_command('$cc.add-report \"coverage\"')
     except:
         print("No coverage report to load")
     #print("started code coverage")
@@ -41,9 +41,11 @@ def fuzz(input):
     
     # Stop code coverage capture and create a report
     cli.quiet_run_command('$cc.stop')
-    cli.quiet_run_command('$cc.save coverage.txt -overwrite')
+    cli.quiet_run_command('$cc.save coverage -overwrite')
+    os.system("rm -rf coverage-lcov")
     cli.quiet_run_command('$cc.lcov-output coverage-lcov')
-    #cli.quiet_run_command('$cc.html-report uefi-report')
+    os.system("lcov_tracefile=$(ls coverage-lcov | sed -e \"s/^/-a coverage-lcov\//\")")
+    os.system("lcov $lcov_tracefile -o merged_tracefile.info")    #cli.quiet_run_command('$cc.html-report uefi-report')
     #print("generated report")
 
     # Stop serial output
@@ -58,5 +60,3 @@ def main():
 
 if __name__ == "__main__":
     main() 
-
-    
