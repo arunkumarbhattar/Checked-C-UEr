@@ -1074,11 +1074,11 @@ StrCmp (
   @return others FirstString is not identical to SecondString.
 
 **/
-INTN
+_Checked INTN
 EFIAPI
 StrnCmp (
-  IN      CONST CHAR16  *FirstString : itype(_Nt_array_ptr<CONST CHAR16>) count(Length),
-  IN      CONST CHAR16  *SecondString : itype(_Nt_array_ptr<CONST CHAR16>) count(Length),
+  IN      CONST CHAR16  *FirstString : itype(_Array_ptr<CONST CHAR16>) count(Length),
+  IN      CONST CHAR16  *SecondString : itype(_Array_ptr<CONST CHAR16>) count(Length),
   IN      UINTN         Length
   );
 

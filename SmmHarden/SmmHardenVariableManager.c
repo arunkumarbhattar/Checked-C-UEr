@@ -6,12 +6,16 @@
   This function is vulnerable to an off-by-one.
   The check in the loop should be "Index < DestSize".
 **/
-UINTN _Checked CopyToSMM(_Array_ptr<CHAR16> Dest : byte_count(DestSize), _Array_ptr<CHAR16> Buffer : byte_count(DestSize), UINTN DestSize){
+UINTN _Checked CopyToSMM(_Array_ptr<CHAR16> Dest : count(DestSize),
+        _Array_ptr<CHAR16> Buffer : count(DestSize), UINTN DestSize){
     INTN Index;
     for(Index = 0; Index <= DestSize; Index += 1){
         Dest[Index] = Buffer[Index];
         if(Buffer[Index] == 0)
             break;
+    }
+    _Unchecked{
+    DEBUG ((DEBUG_INFO, "Should have Crashed.\n"));
     }
     return Index + 1;
 }
@@ -43,15 +47,16 @@ SmmHardenVariableManager (
         DEBUG ((DEBUG_INFO, "[SmmHardenVariableManager] CommBuffer is too big\n"));
         return EFI_SUCCESS;
     }
-    _Array_ptr<CHAR16> temp  = Ptr + CopyToSMM(VD.VariableName,
-                 _Assume_bounds_cast<_Array_ptr<CHAR16>>(Ptr
-                         , byte_count(CommBufferSz)),
+    _Array_ptr<CHAR16> temp  = Ptr + CopyToSMM(
+            _Assume_bounds_cast<_Array_ptr<CHAR16>>(VD.VariableValue, count(CommBufferSz)),
+            _Assume_bounds_cast<_Array_ptr<CHAR16>>(Ptr, count(CommBufferSz)),
                  16);
-    Ptr = _Assume_bounds_cast<_Array_ptr<CHAR16>>(temp, byte_count(CommBufferSz));
+    Ptr = _Assume_bounds_cast<_Nt_array_ptr<CHAR16>>(temp, byte_count(CommBufferSz));
 
     VD.IsNotUser = StrnCmp(VD.VariableName, L"USR-", 4);
     /*  This will overflow in VD.IsNotUSer when the string pointed by Ptr is 16 character long.  */
-    CopyToSMM(VD.VariableValue, _Assume_bounds_cast<_Array_ptr<CHAR16>>(Ptr, byte_count(16)), 16);
+    CopyToSMM(_Assume_bounds_cast<_Array_ptr<CHAR16>>(VD.VariableValue, count(CommBufferSz)),
+              _Assume_bounds_cast<_Array_ptr<CHAR16>>(Ptr, count(CommBufferSz)), 16);
 
     DEBUG ((DEBUG_INFO, "[SmmHardenVariableManager] Setting %s to %u ? ",
             VD.VariableName, StrDecimalToUintn(VD.VariableValue)));
