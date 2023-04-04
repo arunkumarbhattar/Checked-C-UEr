@@ -2,7 +2,7 @@ EFI_STATUS
 EFIAPI
 SmmHardenVariableManager (
   IN EFI_HANDLE  DispatchHandle,
-  IN CONST VOID  *Context         OPTIONAL,
+  IN CONST _Ptr<VOID>  Context         OPTIONAL,
   IN OUT _Array_ptr<VOID>    CommBuffer      OPTIONAL,
   IN OUT _Ptr<UINTN>   CommBufferSize  OPTIONAL
 );
@@ -11,9 +11,9 @@ EFI_STATUS
 EFIAPI
 SmmHardenBootService (
   IN EFI_HANDLE  DispatchHandle,
-  IN CONST VOID  *Context         OPTIONAL,
-  IN OUT VOID    *CommBuffer      OPTIONAL,
-  IN OUT UINTN   *CommBufferSize  OPTIONAL
+  IN CONST _Ptr<VOID>  Context         OPTIONAL,
+  IN OUT _Array_ptr<VOID>    CommBuffer      OPTIONAL,
+  IN OUT _Ptr<UINTN>   CommBufferSize OPTIONAL
 );
 
 EFI_STATUS _Checked

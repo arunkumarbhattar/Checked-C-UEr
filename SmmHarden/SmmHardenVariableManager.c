@@ -26,7 +26,7 @@ EFI_STATUS
 EFIAPI
 SmmHardenVariableManager (
   IN EFI_HANDLE  DispatchHandle,
-  IN CONST VOID  *Context         OPTIONAL,
+  IN CONST _Ptr<VOID>  Context         OPTIONAL,
   IN OUT _Array_ptr<VOID>    CommBuffer   OPTIONAL,
   IN OUT _Ptr<UINTN>   CommBufferSize  OPTIONAL
   )
@@ -43,14 +43,15 @@ SmmHardenVariableManager (
         DEBUG ((DEBUG_INFO, "[SmmHardenVariableManager] CommBuffer is too big\n"));
         return EFI_SUCCESS;
     }
+    _Array_ptr<CHAR16> temp  = Ptr + CopyToSMM(VD.VariableName,
+                 _Assume_bounds_cast<_Array_ptr<CHAR16>>(Ptr
+                         , byte_count(CommBufferSz)),
+                 16);
+    Ptr = _Assume_bounds_cast<_Array_ptr<CHAR16>>(temp, byte_count(CommBufferSz));
 
-    Ptr += CopyToSMM(VD.VariableName,
-                     _Assume_bounds_cast<_Array_ptr<CHAR16>>(Ptr
-                             , byte_count(16)),
-                     16);
     VD.IsNotUser = StrnCmp(VD.VariableName, L"USR-", 4);
     /*  This will overflow in VD.IsNotUSer when the string pointed by Ptr is 16 character long.  */
-    CopyToSMM(VD.VariableValue, Ptr, 16);
+    CopyToSMM(VD.VariableValue, _Assume_bounds_cast<_Array_ptr<CHAR16>>(Ptr, byte_count(16)), 16);
 
     DEBUG ((DEBUG_INFO, "[SmmHardenVariableManager] Setting %s to %u ? ",
             VD.VariableName, StrDecimalToUintn(VD.VariableValue)));
@@ -65,4 +66,3 @@ SmmHardenVariableManager (
 
     return EFI_SUCCESS;
 }
-24

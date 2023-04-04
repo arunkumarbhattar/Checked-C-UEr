@@ -108,7 +108,7 @@ SmmHardenInit (
 
   /* Register the Boot Service Handler to run in SMM. */
   Status = gSmst->SmiHandlerRegister (
-                    SmmHardenBootService,
+          (EFI_MM_HANDLER_ENTRY_POINT)SmmHardenBootService,
                     &gEfiSmmHardenBootServiceGuid, // XXX
                     &DispatchHandle
                     );
@@ -116,7 +116,7 @@ SmmHardenInit (
 
   /* Register the Variable Manager Handler to run in SMM. */
   Status = gSmst->SmiHandlerRegister (
-                    SmmHardenVariableManager,
+          (EFI_MM_HANDLER_ENTRY_POINT)SmmHardenVariableManager,
                     &gEfiSmmHardenVariableManagerGuid,
                     &DispatchHandle
                     );
