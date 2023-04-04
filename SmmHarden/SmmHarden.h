@@ -3,8 +3,8 @@ EFIAPI
 SmmHardenVariableManager (
   IN EFI_HANDLE  DispatchHandle,
   IN CONST VOID  *Context         OPTIONAL,
-  IN OUT VOID    *CommBuffer      OPTIONAL,
-  IN OUT UINTN   *CommBufferSize  OPTIONAL
+  IN OUT _Array_ptr<VOID>    CommBuffer      OPTIONAL,
+  IN OUT _Ptr<UINTN>   CommBufferSize  OPTIONAL
 );
 
 EFI_STATUS
@@ -16,19 +16,21 @@ SmmHardenBootService (
   IN OUT UINTN   *CommBufferSize  OPTIONAL
 );
 
-EFI_STATUS SmmHardenGetVariable(
-  IN  CHAR16    *VariableName,
-  OUT UINT32    *VariableValue
+EFI_STATUS _Checked
+        SmmHardenGetVariable(
+        IN _Nt_array_ptr<CHAR16>   VariableName,
+        OUT _Array_ptr<UINT32>    VariableValue
 );
 
-EFI_STATUS SmmHardenSetVariable(
-  IN CHAR16     *VariableName,
-  IN UINT32     VariableValue
+EFI_STATUS _Checked
+        SmmHardenSetVariable(
+        IN _Nt_array_ptr<CHAR16> VariableName,
+        IN UINT32     VariableValue
 );
 
 VOID
-SmmHardenCommunicateSMM(
-  IN EFI_GUID  Guid,
-  IN VOID     *Data,
-  IN UINTN    DataSize
+    SmmHardenCommunicateSMM(
+    IN EFI_GUID  Guid,
+    IN _Array_ptr<VOID>  Data : byte_count(DataSize),
+    IN UINTN    DataSize
 );

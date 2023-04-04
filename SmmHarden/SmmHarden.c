@@ -13,12 +13,12 @@
 extern EFI_GUID gEfiSmmHardenVariableManagerGuid;
 extern EFI_GUID gEfiSmmHardenBootServiceGuid;
 
-EFI_SMM_VARIABLE_PROTOCOL    *mSmmVariable;
+_Ptr<EFI_SMM_VARIABLE_PROTOCOL_C>    mSmmVariable;
 
-EFI_STATUS
+EFI_STATUS _Checked
 SmmHardenGetVariable(
-  IN CHAR16     *VariableName,
-  OUT UINT32    *VariableValue
+  IN _Nt_array_ptr<CHAR16>   VariableName,
+  OUT _Array_ptr<UINT32>    VariableValue
   )
 {
   UINT32 Attributes;
@@ -36,9 +36,9 @@ SmmHardenGetVariable(
 }
 
 
-EFI_STATUS
+EFI_STATUS _Checked
 SmmHardenSetVariable(
-  IN CHAR16     *VariableName,
+  IN _Nt_array_ptr<CHAR16> VariableName,
   IN UINT32     VariableValue
   )
 {
@@ -51,7 +51,9 @@ SmmHardenSetVariable(
                 4,
                 &VariableValue
                 );
+  _Unchecked{ //unchecked because of variadic arguments
   ASSERT_EFI_ERROR (Status);
+  }
   return Status;
 }
 
@@ -59,7 +61,7 @@ SmmHardenSetVariable(
 VOID
 SmmHardenCommunicateSMM(
   IN EFI_GUID  Guid,
-  IN VOID     *Data,
+  IN _Array_ptr<VOID>  Data : byte_count(DataSize),
   IN UINTN    DataSize
 )
 {

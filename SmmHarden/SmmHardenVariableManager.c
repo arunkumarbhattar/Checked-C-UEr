@@ -6,7 +6,7 @@
   This function is vulnerable to an off-by-one.
   The check in the loop should be "Index < DestSize".
 **/
-UINTN CopyToSMM(CHAR16 *Dest, CHAR16 *Buffer, UINTN DestSize){
+UINTN _Checked CopyToSMM(_Array_ptr<CHAR16> Dest : byte_count(DestSize), _Array_ptr<CHAR16> Buffer : byte_count(DestSize), UINTN DestSize){
     INTN Index;
     for(Index = 0; Index <= DestSize; Index += 1){
         Dest[Index] = Buffer[Index];
@@ -17,8 +17,8 @@ UINTN CopyToSMM(CHAR16 *Dest, CHAR16 *Buffer, UINTN DestSize){
 }
 
 struct VariableDescriptor {
-    CHAR16 VariableName[16];
-    CHAR16 VariableValue[16];
+    CHAR16 VariableName _Nt_checked[16];
+    CHAR16 VariableValue _Nt_checked[16];
     BOOLEAN IsNotUser;
 };
 
@@ -27,12 +27,14 @@ EFIAPI
 SmmHardenVariableManager (
   IN EFI_HANDLE  DispatchHandle,
   IN CONST VOID  *Context         OPTIONAL,
-  IN OUT VOID    *CommBuffer      OPTIONAL,
-  IN OUT UINTN   *CommBufferSize  OPTIONAL
+  IN OUT _Array_ptr<VOID>    CommBuffer   OPTIONAL,
+  IN OUT _Ptr<UINTN>   CommBufferSize  OPTIONAL
   )
 {
     struct VariableDescriptor VD;
-    CHAR16 *Ptr = (CHAR16*) CommBuffer;
+    int CommBufferSz =  *CommBufferSize;
+    _Array_ptr<CHAR16> Ptr : byte_count(CommBufferSz) = _Assume_bounds_cast<_Array_ptr<CHAR16>>(
+            CommBuffer, byte_count(CommBufferSz));
 
     DEBUG ((DEBUG_INFO, "[SmmHardenVariableManager] Received %d %s\n",
             *CommBufferSize, (CHAR16*)CommBuffer));
@@ -42,7 +44,10 @@ SmmHardenVariableManager (
         return EFI_SUCCESS;
     }
 
-    Ptr += CopyToSMM(VD.VariableName, Ptr, 16);
+    Ptr += CopyToSMM(VD.VariableName,
+                     _Assume_bounds_cast<_Array_ptr<CHAR16>>(Ptr
+                             , byte_count(16)),
+                     16);
     VD.IsNotUser = StrnCmp(VD.VariableName, L"USR-", 4);
     /*  This will overflow in VD.IsNotUSer when the string pointed by Ptr is 16 character long.  */
     CopyToSMM(VD.VariableValue, Ptr, 16);
@@ -60,3 +65,4 @@ SmmHardenVariableManager (
 
     return EFI_SUCCESS;
 }
+24
